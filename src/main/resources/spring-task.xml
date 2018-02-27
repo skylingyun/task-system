@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+
+    <bean id="mergeUser" class="com.ybz.task.MergeUser" />
+    <!--注册定时器类，后面讲 -->
+    <!--定时器1 begin-->
+    <bean id="mergeUserTaskInfo"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="mergeUser" />
+        <property name="targetMethod" value="mergeUser" />
+        <!--指定定时器任务类要执行的方法名称 这里是midownloadItemTask -->
+    </bean>
+    <bean id="mergeUserTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!--配置定时器任务的调度器 -->
+        <property name="jobDetail" ref="mergeUserTaskInfo" />
+        <property name="cronExpression" value="0 0 1 * * ?" />
+        <!--每隔5秒执行 -->
+    </bean>
+
+    <bean id="mergeNotes" class="com.ybz.task.MergeNotes" />
+    <!--注册定时器类，后面讲 -->
+    <!--定时器2 begin-->
+    <bean id="mergeNotesTaskInfo"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="mergeNotes" />
+        <property name="targetMethod" value="mergeNotes" />
+        <!--指定定时器任务类要执行的方法名称 这里是midownloadItemTask -->
+    </bean>
+    <bean id="mergeNotesTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!--配置定时器任务的调度器 -->
+        <property name="jobDetail" ref="mergeNotesTaskInfo" />
+        <property name="cronExpression" value="0 0 2 * * ?" />
+        <!--每隔5秒执行 -->
+    </bean>
+
+    <bean id="mergeBills" class="com.ybz.task.MergeBills" />
+    <!--注册定时器类，后面讲 -->
+
+    <!--定时器3 begin-->
+    <bean id="mergeBillsTaskInfo"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="mergeBills" />
+        <property name="targetMethod" value="mergeBills" />
+        <!--指定定时器任务类要执行的方法名称 这里是midownloadItemTask -->
+    </bean>
+    <bean id="mergeBillsTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!--配置定时器任务的调度器 -->
+        <property name="jobDetail" ref="mergeBillsTaskInfo" />
+        <property name="cronExpression" value="0 0 3 * * ?" />
+        <!--每隔5秒执行 -->
+    </bean>
+
+
+    <!--注册监听器 -->
+    <bean id="registerQuartz"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!--注册定时器实体 集合 -->
+        <property name="triggers">
+            <list>
+                <ref bean="mergeUserTrigger" />
+                <ref bean="mergeNotesTrigger"/>
+                <ref bean="mergeBillsTrigger"/>
+            </list>
+        </property>
+    </bean>
+</beans>
